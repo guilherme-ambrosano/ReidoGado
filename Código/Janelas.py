@@ -47,12 +47,22 @@ class menuPrevisao:
     def retornar_df(self):
         df = self.env.dados
         ultimo_ano = df["Ano"].max()
-        df_temp = df.groupby(["Ano", "Mes"],
-                             as_index = False)["Temp"].mean()
-        df_chuva = df.groupby(["Ano", "Mes"],
-                              as_index = False)["Chuva"].sum()
-        df = pd.merge(df_temp, df_chuva, on=["Ano", "Mes"])
-        return df
+        if self.env.piquetes > 0:
+            df_temp = df.groupby(["Ano", "Mes"],
+                                 as_index = False)["Temp"].mean()
+            df_chuva = df.groupby(["Ano", "Mes"],
+                                  as_index = False)["Chuva"].sum()
+            df = pd.merge(df_temp, df_chuva, on=["Ano", "Mes"])
+            return df
+        else:
+            df_temp = df.groupby(["Ano", "Mes"],
+                                 as_index = False)["Temp"].mean()
+            df_chuva = df_temp.copy().rename(columns = {"Ano": "Ano",\
+                    "Mes": "Mes", "Temp": "Chuva"})
+            df_chuva["Chuva"] = 0
+            df = pd.merge(df_temp, df_chuva, on=["Ano", "Mes"])
+            df.loc[0] = [0, 0, 0, 0]
+            return df
 
     def retornar_df_old(self):
         if self.variavel == "temperatura":
@@ -86,7 +96,6 @@ class menuPrevisao:
             dic_medios = {
                     "tempo": tempos_medios,
                     "dados": dados_medios}
-            print(dic_medios)
             df_medios = pd.DataFrame.from_dict(dic_medios)
 
             df = df.append(df_medios)
