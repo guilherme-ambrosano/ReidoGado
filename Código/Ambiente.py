@@ -74,7 +74,7 @@ class Ambiente():
                                                         "Dia",
                                                         "Temp",
                                                         "Chuva"])
-            self.dados = self.dados.append(df_linha,
+            self.dados = self.dados._append(df_linha,
                                            ignore_index=True)
 
     def set_mes(self):
